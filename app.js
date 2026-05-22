@@ -65,9 +65,10 @@ let _userName = '';
   /* ─── Clock ────────────────────────────────────────────── */
   class Clock {
     constructor(options) {
-      this._el        = $.el('#clock');
-      this._dateEl    = $.el('#date-line');
-      this._hintEl    = $.el('#clock-hint');
+      this._el          = $.el('#clock');
+      this._dateEl      = $.el('#date-line');
+      this._hintEl      = $.el('#clock-hint');
+      this._greetingEl  = $.el('#greeting-line');
       this._amPm      = options.amPm;
       this._delimiter = options.delimiter;
       this._showSecs  = options.showSeconds;
@@ -112,15 +113,19 @@ let _userName = '';
         });
       }
 
+      const h = date.getHours();
+      const greeting = h >= 5 && h < 12 ? 'Good morning'
+        : h >= 12 && h < 17 ? 'Good afternoon'
+        : h >= 17 && h < 21 ? 'Good evening'
+        : h >= 21 || h < 1 ? 'Good night'
+        : 'Hey';
+      const name = _userName ? `, ${_userName}` : '';
+
+      if (this._greetingEl) {
+        this._greetingEl.textContent = `${greeting}${name}`;
+      }
       if (this._hintEl) {
-        const h = date.getHours();
-        const greeting = h >= 5 && h < 12 ? 'Good morning'
-          : h >= 12 && h < 17 ? 'Good afternoon'
-          : h >= 17 && h < 21 ? 'Good evening'
-          : h >= 21 || h < 1 ? 'Good night'
-          : 'Hey';
-        const name = _userName ? `, ${_userName}` : '';
-        this._hintEl.textContent = `${greeting}${name}  ·  press any key  ·  ? for shortcuts`;
+        this._hintEl.textContent = 'press any key  ·  ? for shortcuts';
       }
     }
 

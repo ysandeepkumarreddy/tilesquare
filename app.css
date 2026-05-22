@@ -190,6 +190,20 @@ body::after {
   gap: 0;
 }
 
+/* ─── greeting ───────────────────────────────────────── */
+
+.greeting-line {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: var(--fw-black);
+  letter-spacing: -0.01em;
+  margin-bottom: 0.6rem;
+  min-height: 1.8rem;
+  transition: opacity var(--t-mid);
+}
+
+body.form .greeting-line { opacity: 0.35; }
+
 /* ─── clock ───────────────────────────────────────────── */
 
 .clock {
