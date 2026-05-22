@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "TileSquare",
+  "version": "1.0.0",
+  "description": "Glassmorphic new tab with smart search, weather, calendar, todos, and quick notes",
+  "icons": {
+    "16":  "favicon.svg",
+    "32":  "favicon.svg",
+    "48":  "favicon.svg",
+    "128": "favicon.svg"
+  },
+  "chrome_url_overrides": { "newtab": "index.html" },
+  "permissions": ["storage", "geolocation"],
+  "host_permissions": [
+    "https://duckduckgo.com/",
+    "https://api.open-meteo.com/",
+    "https://api.bigdatacloud.net/",
+    "https://official-joke-api.appspot.com/",
+    "https://www.google.com/s2/favicons*",
+    "<all_urls>"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "background": { "service_worker": "background.js" },
+  "browser_specific_settings": {
+    "gecko": { "id": "tilesquare@local", "strict_min_version": "109.0" }
+  }
+}
