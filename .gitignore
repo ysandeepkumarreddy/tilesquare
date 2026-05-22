@@ -1,0 +1,36 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# Node (if build tooling is added)
+node_modules/
+npm-debug.log*
+yarn-error.log
+
+# Build output
+dist/
+build/
+*.zip
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# Chrome extension package
+*.crx
+*.pem
