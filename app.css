@@ -657,10 +657,11 @@ body.suggestions .search-suggestions { display: flex; margin-top: 1rem; }
   display: flex;
   flex-direction: column;
   gap: 0.18rem;
-  transition: border-color var(--t-fast);
+  cursor: pointer;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
 }
 
-.cal-event:hover { border-color: rgba(255,255,255,0.22); }
+.cal-event:hover { border-color: rgba(255,255,255,0.28); box-shadow: 0 4px 16px var(--glass-shadow); }
 
 .cal-event.cal-ended { opacity: 0.38; }
 .cal-event.cal-ended .cal-event-title { text-decoration: line-through; }

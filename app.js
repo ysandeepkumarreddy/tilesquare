@@ -1350,7 +1350,7 @@ let _userName = '';
 
     _meetLink(ev) {
       const txt = [ev.url, ev.location, ev.desc].filter(Boolean).join(' ');
-      const m = txt.match(/https?:\/\/[^\s<>"'\\]+(?:meet\.google\.com|zoom\.us|teams\.microsoft|webex\.com|whereby\.com)[^\s<>"'\\]*/);
+      const m = txt.match(/https?:\/\/[^\s<>"'\\]*(?:meet\.google\.com|zoom\.us|teams\.microsoft\.com|webex\.com|whereby\.com)[^\s<>"'\\]*/);
       return m ? m[0] : null;
     }
 
@@ -1450,6 +1450,11 @@ let _userName = '';
             const card  = document.createElement('div');
             card.className = ended ? 'cal-event cal-ended' : 'cal-event';
 
+            const d = ev.start;
+            const calUrl = ev.url ||
+              `https://calendar.google.com/calendar/r/day/${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
+            card.addEventListener('click', () => window.open(calUrl, '_blank', 'noopener noreferrer'));
+
             const title = document.createElement('span');
             title.className = 'cal-event-title';
             title.textContent = ev.title || 'Untitled';
@@ -1470,6 +1475,7 @@ let _userName = '';
               a.className = 'cal-join'; a.href = join;
               a.target = '_blank'; a.rel = 'noopener noreferrer';
               a.textContent = 'Join →';
+              a.addEventListener('click', (e) => e.stopPropagation());
               card.appendChild(a);
             }
             group.appendChild(card);
