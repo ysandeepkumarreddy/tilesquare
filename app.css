@@ -296,6 +296,22 @@ body.form .clock-hint { opacity: 0; pointer-events: none; }
   animation: sunRays 28s linear infinite;
 }
 #weather-fx-sun.active { opacity: 1; }
+
+#weather-fx-moon {
+  position: fixed;
+  top: -4vmin;
+  right: -4vmin;
+  width: 22vmin;
+  height: 22vmin;
+  display: block;
+  background: transparent;
+  border: none;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 2.5s ease;
+}
+#weather-fx-moon.active { opacity: 1; }
 body.glass-light #weather-fx-sun {
   background: radial-gradient(circle,
     rgba(255, 200, 80, 0.38) 0%,

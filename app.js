@@ -235,6 +235,10 @@ let _userName = '';
       this._sun.id = 'weather-fx-sun';
       document.body.appendChild(this._sun);
 
+      this._moonCanvas = document.createElement('canvas');
+      this._moonCanvas.id = 'weather-fx-moon';
+      document.body.appendChild(this._moonCanvas);
+
       this._drops       = [];
       this._type        = null;
       this._raf         = null;
@@ -245,7 +249,7 @@ let _userName = '';
 
       /* resume loop when tab becomes visible again after being hidden */
       document.addEventListener('visibilitychange', () => {
-        if (!document.hidden && this._type && !this._raf) this._loop(this._type);
+        if (!document.hidden && this._drops.length && !this._raf) this._loop(this._type);
       });
     }
 
@@ -256,6 +260,12 @@ let _userName = '';
       this._teardown();
       if (type === 'sunny') {
         this._sun.classList.add('active');
+      } else if (type === 'moon') {
+        const phase = WeatherFX._moonPhase();
+        if (phase > 0.04 && phase < 0.96) {
+          this._renderMoon(phase);
+          this._moonCanvas.classList.add('active');
+        }
       } else if (type) {
         this._canvas.classList.add('active');
         this._spawn(type);
@@ -272,6 +282,7 @@ let _userName = '';
       this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
       this._canvas.classList.remove('active');
       this._sun.classList.remove('active');
+      this._moonCanvas.classList.remove('active');
     }
 
     _resize() {
@@ -492,8 +503,64 @@ let _userName = '';
       setTimeout(flash, 2000 + Math.random() * 4000);
     }
 
+    static _moonPhase() {
+      /* returns 0 (new moon) → 0.5 (full moon) → 1 (new moon) */
+      const knownNewMoon  = Date.UTC(2000, 0, 6, 18, 14, 0);
+      const synodicPeriod = 29.53059;
+      const daysSince     = (Date.now() - knownNewMoon) / 86400000;
+      return ((daysSince % synodicPeriod) / synodicPeriod + 1) % 1;
+    }
+
+    _renderMoon(phase) {
+      const size = 300, r = 62;
+      const cx = size / 2, cy = size / 2;
+      this._moonCanvas.width  = size;
+      this._moonCanvas.height = size;
+      const ctx = this._moonCanvas.getContext('2d');
+      ctx.clearRect(0, 0, size, size);
+
+      /* outer glow */
+      const glow = ctx.createRadialGradient(cx, cy, r * 0.4, cx, cy, r * 2.4);
+      glow.addColorStop(0,   'rgba(230, 220, 160, 0.18)');
+      glow.addColorStop(0.5, 'rgba(230, 220, 160, 0.06)');
+      glow.addColorStop(1,   'rgba(230, 220, 160, 0)');
+      ctx.beginPath();
+      ctx.arc(cx, cy, r * 2.4, 0, Math.PI * 2);
+      ctx.fillStyle = glow;
+      ctx.fill();
+
+      /* phase-accurate lit shape:
+         right outer arc + terminator ellipse for waxing,
+         left outer arc  + terminator ellipse for waning. */
+      const rx       = r * Math.abs(Math.cos(phase * 2 * Math.PI));
+      const isWaxing = phase < 0.5;
+
+      ctx.beginPath();
+      if (isWaxing) {
+        ctx.arc(cx, cy, r, Math.PI / 2, -Math.PI / 2, false);
+        phase < 0.25
+          ? ctx.ellipse(cx, cy, rx, r, 0, -Math.PI / 2, Math.PI / 2, true)
+          : ctx.ellipse(cx, cy, rx, r, 0, -Math.PI / 2, Math.PI / 2, false);
+      } else {
+        ctx.arc(cx, cy, r, -Math.PI / 2, Math.PI / 2, true);
+        phase < 0.75
+          ? ctx.ellipse(cx, cy, rx, r, 0, Math.PI / 2, -Math.PI / 2, false)
+          : ctx.ellipse(cx, cy, rx, r, 0, Math.PI / 2, -Math.PI / 2, true);
+      }
+      ctx.closePath();
+
+      const fill = ctx.createRadialGradient(cx - r * 0.2, cy - r * 0.2, r * 0.1, cx, cy, r);
+      fill.addColorStop(0,   'rgba(248, 244, 218, 0.92)');
+      fill.addColorStop(0.7, 'rgba(235, 228, 192, 0.87)');
+      fill.addColorStop(1,   'rgba(218, 210, 172, 0.78)');
+      ctx.fillStyle = fill;
+      ctx.fill();
+    }
+
     static _toType(code) {
-      if ([0, 1].includes(code))            return 'sunny';
+      const hour = new Date().getHours();
+      const isNight = hour < 6 || hour >= 20;
+      if ([0, 1].includes(code))            return isNight ? 'moon' : 'sunny';
       if (code === 2)                        return 'cloudy';
       if (code === 3)                        return 'overcast';
       if ([45, 48].includes(code))          return 'fog';
